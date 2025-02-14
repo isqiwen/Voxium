@@ -13,7 +13,8 @@ SUBCOMMANDS = {
     "setup-env": "Tools.BuildSystem.EnvSetup",
     "builder": "Tools.BuildSystem.Runner",
     "tree": "Tools.Utilities.PrintTree",
-    "format": "Tools.Utilities.CodeFormat"
+    "format": "Tools.Utilities.CodeFormat",
+    "gitkeep": "Tools.Utilities.GitKeep"
 }
 
 def main():

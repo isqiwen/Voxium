@@ -5,11 +5,9 @@ configure_file(${VOXIUM_CODE_GEN_PARAMS_IN_PATH} ${VOXIUM_CODE_GEN_PARAMS_PATH})
 #
 # use wine for linux
 if (CMAKE_HOST_WIN32)
-    set(CODE_GEN_PRE_EXE)
     set(CODE_GEN_PARSER ${EXECUTABLE_DIR}/${META_PARSER_TARGET}.exe)
     set(sys_include "*")
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux" )
-    set(CODE_GEN_PRE_EXE)
     set(CODE_GEN_PARSER ${EXECUTABLE_DIR}/${META_PARSER_TARGET})
     set(sys_include "/usr/include/c++/9/")
     #execute_process(COMMAND chmod a+x ${CODE_GEN_PARSER} WORKING_DIRECTORY ${EXECUTABLE_DIR})
@@ -25,7 +23,6 @@ elseif(CMAKE_HOST_APPLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    set(CODE_GEN_PRE_EXE)
     set(CODE_GEN_PARSER ${EXECUTABLE_DIR}/${META_PARSER_TARGET})
     set(sys_include "${osx_sdk_platform_path_test}/../../Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1")
 endif()
