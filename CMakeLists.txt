@@ -27,13 +27,3 @@ include(CMake/ProjectOptions.cmake)
 print_project_configuration()
 
 add_subdirectory(Engine)
-
-if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-    enable_testing()
-    add_subdirectory(test)
-endif()
-
-if(${PROJECT_NAME}_ENABLE_DOXYGEN)
-    include(CMake/Doxygen.cmake)
-    setup_doxygen()
-endif()

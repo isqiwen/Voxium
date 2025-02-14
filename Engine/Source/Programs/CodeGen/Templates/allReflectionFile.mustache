@@ -1,0 +1,15 @@
+#pragma once
+#include "Core/Meta/Reflection/Reflection.h"
+#include "_generated/serializer/all_serializer.h"
+{{#include_headfiles}}
+#include "{{headfile_name}}"
+{{/include_headfiles}}
+
+namespace Voxium::Core {
+namespace Reflection{
+    void TypeMetaRegister::metaRegister(){
+        {{#sourefile_names}}TypeWrappersRegister::{{sourefile_name_upper_camel_case}}();
+        {{/sourefile_names}}
+    }
+}
+}

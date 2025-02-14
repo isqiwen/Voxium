@@ -137,3 +137,7 @@ Build
 # environment
 !Pipfile
 !Pipfile.lock
+
+# templates
+!*.mustache
+!*.in
