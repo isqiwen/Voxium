@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 import argparse
 
 IGNORE_FOLDER = ["build", "bin", "dist", ".git", ".venv", ".vscode"]

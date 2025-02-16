@@ -26,4 +26,7 @@ include(CMake/ProjectOptions.cmake)
 
 print_project_configuration()
 
+find_package(Vulkan REQUIRED)
+message(STATUS "QQQQQQQQQQQQQQQQ"${VulkanLoader_LIBRARIES})
+
 add_subdirectory(Engine)
