@@ -32,10 +32,10 @@ namespace Voxium::Platform::Desktop::Vulkan
                              const uint32_t                     height,
                              const uint32_t                     stages) :
         context_(std::move(context)), m_format(std::move(format)), width_(width), height_(height),
-        m_shouldTransition(true)
+        shouldTransition_(true)
     {
         const auto& attachments = m_format->GetAttachments();
-        m_textures.reserve(attachments.size());
+        textures_.reserve(attachments.size());
 
         std::vector<std::vector<vk::ImageView>> FrameBufferViews;
         FrameBufferViews.resize(stages);
@@ -58,9 +58,9 @@ namespace Voxium::Platform::Desktop::Vulkan
 
                 FrameBufferViews[i].push_back(*view);
 
-                util::TransitionImageLayoutsImmediate(*context_->m_device,
-                                                      *context_->m_commandPool,
-                                                      context_->m_graphicsQueue,
+                util::TransitionImageLayoutsImmediate(*context_->device_,
+                                                      *context_->commandPool_,
+                                                      context_->graphicsQueue_,
                                                       {{image->get(),
                                                         aspectFlags,
                                                         vk::ImageLayout::eUndefined,
@@ -72,11 +72,11 @@ namespace Voxium::Platform::Desktop::Vulkan
                 views.push_back(std::move(view));
             }
 
-            m_textures.push_back(
+            textures_.push_back(
                 std::make_shared<FrameBufferTexture>(context_, std::move(images), std::move(views), width, height));
         }
 
-        m_FrameBuffers = context_->CreateFrameBuffers(m_format->GetPass(), {width, height}, FrameBufferViews);
+        frameBuffers_ = context_->CreateFrameBuffers(m_format->GetPass(), {width, height}, FrameBufferViews);
     }
 
     FrameBuffer::FrameBuffer(std::shared_ptr<VulkanContext>     context,
@@ -86,29 +86,29 @@ namespace Voxium::Platform::Desktop::Vulkan
                              std::vector<vk::UniqueImageView>   imageViews,
                              std::vector<vk::UniqueFrameBuffer> FrameBuffers) :
         context_(std::move(context)), m_format(std::move(format)), width_(width), height_(height),
-        m_FrameBuffers(std::move(FrameBuffers)), m_writeIndex(static_cast<uint32_t>(imageViews.size() - 1)),
-        m_shouldTransition(false)
+        frameBuffers_(std::move(FrameBuffers)), writeIndex_(static_cast<uint32_t>(imageViews.size() - 1)),
+        shouldTransition_(false)
     {
-        m_textures.push_back(std::make_shared<FrameBufferTexture>(
+        textures_.push_back(std::make_shared<FrameBufferTexture>(
             context_, std::vector<std::unique_ptr<VulkanImage>> {}, std::move(imageViews), width, height));
     }
 
-    void FrameBuffer::advance()
+    void FrameBuffer::Advance();
     {
-        m_writeIndex = getWriteIndex();
-        for (auto& texture : m_textures)
-            texture->readIndex_ = (m_writeIndex + 1) % m_FrameBuffers.size();
+        writeIndex_ = GetWriteIndex();
+        for (auto& texture : textures_)
+            texture->readIndex_ = (writeIndex_ + 1) % frameBuffers_.size();
     }
 
-    void FrameBuffer::transitionTexturesPost(const vk::CommandBuffer& cmd)
+    void FrameBuffer::TransitionTexturesPost(const vk::CommandBuffer& cmd)
     {
-        if (!m_shouldTransition)
+        if (!shouldTransition_)
             return;
 
         const auto& attachments = m_format->GetAttachments();
 
         auto i = 0u;
-        for (auto& texture : m_textures)
+        for (auto& texture : textures_)
         {
             const auto& attachment = attachments[i];
             util::TransitionImageLayouts(cmd,

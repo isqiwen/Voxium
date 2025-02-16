@@ -84,9 +84,9 @@ namespace Voxium::Platform::Desktop::Vulkan
         cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, p->get());
 
         auto vb = std::static_pointer_cast<VertexBuffer>(m_vertexBuffer);
-        if (m_instanceBuffer)
+        if (instance_Buffer)
         {
-            auto ib = std::static_pointer_cast<VertexBuffer>(m_instanceBuffer);
+            auto ib = std::static_pointer_cast<VertexBuffer>(instance_Buffer);
             cmd.bindVertexBuffers(0, {vb->get(), ib->get()}, {0, 0});
             cmd.Draw(vb->size(), ib->size(), 0, 0);
         }
@@ -98,8 +98,8 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         resources.push_back(m_pipeline);
         resources.push_back(m_vertexBuffer);
-        if (m_instanceBuffer)
-            resources.push_back(m_instanceBuffer);
+        if (instance_Buffer)
+            resources.push_back(instance_Buffer);
     }
 
     CommandBuffer::CommandBuffer(std::shared_ptr<VulkanContext> context, const uint32_t stages) :

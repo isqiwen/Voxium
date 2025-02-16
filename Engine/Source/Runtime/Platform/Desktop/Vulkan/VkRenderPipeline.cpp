@@ -374,7 +374,7 @@ namespace Voxium::Platform::Desktop::Vulkan
             shader_LayoutOffsets.emplace(shader.get(), descriptorOffset);
             descriptorOffset += static_cast<uint32_t>(layouts.size());
         }
-        m_layout = context_->m_device->CreatePipelineLayoutUnique({{}, m_descriptorSetLayouts});
+        m_layout = context_->device_->CreatePipelineLayoutUnique({{}, m_descriptorSetLayouts});
 
         // TODO: Other layout / uniform stuff
 
@@ -382,8 +382,8 @@ namespace Voxium::Platform::Desktop::Vulkan
         for (const auto& shader : shader_s)
             pipelineShaderStageCreateInfos.push_back({{}, shader->GetStage(), shader->GetModule(), "main", {}});
 
-        m_pipeline = context_->m_device
-                         ->createGraphicsPipelineUnique(*context_->m_pipelineCache,
+        m_pipeline = context_->device_
+                         ->createGraphicsPipelineUnique(*context_->pipelineCache_,
                                                         {{},
                                                          pipelineShaderStageCreateInfos,
                                                          &vertexInputStateCreateInfo,

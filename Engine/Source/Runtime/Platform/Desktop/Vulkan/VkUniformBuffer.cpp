@@ -50,7 +50,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         auto buf =
             context_->CreateCpuToGpuTransferBuffer(uniformData_.data(), static_cast<uint32_t>(uniformData_.size()));
 
-        CopyBufferToBufferImmediate(*context_->m_device,
+        CopyBufferToBufferImmediate(*context_->device_,
                                     *context_->commandPool_,
                                     context_->graphicsQueue_,
                                     buf->Buffer(),

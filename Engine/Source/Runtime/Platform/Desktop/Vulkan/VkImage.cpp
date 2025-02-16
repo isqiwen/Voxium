@@ -10,5 +10,5 @@ namespace Voxium::Platform::Desktop::Vulkan
         context_(std::move(context)), image_(std::move(image)), memoryAllocation_(memoryAllocation)
     {}
 
-    VulkanImage::~VulkanImage() { context_->m_memoryAllocator.freeMemory(memoryAllocation_); }
+    VulkanImage::~VulkanImage() { context_->memoryAllocator_.freeMemory(memoryAllocation_); }
 } // namespace Voxium::Platform::Desktop::Vulkan

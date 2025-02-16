@@ -106,7 +106,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                            std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   vertexBuffer,
                            std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   instanceBuffer) :
             m_pipeline(std::move(pipeline)), m_vertexBuffer(std::move(vertexBuffer)),
-            m_instanceBuffer(std::move(instanceBuffer))
+            instance_Buffer(std::move(instanceBuffer))
         {}
 
         void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
@@ -114,7 +114,7 @@ namespace Voxium::Platform::Desktop::Vulkan
     private:
         std::shared_ptr<Voxium::Platform::Render::RenderPipeline> m_pipeline;
         std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   m_vertexBuffer;
-        std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   m_instanceBuffer;
+        std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   instance_Buffer;
     };
 
     class CommandBuffer final : public Voxium::Platform::Render::CommandBuffer, public IScalableStagingResource

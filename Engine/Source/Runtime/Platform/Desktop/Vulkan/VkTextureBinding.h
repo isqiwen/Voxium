@@ -35,7 +35,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         uint32_t                       binding_;
 
         std::vector<std::shared_ptr<ITextureSampler>> m_samplers;
-        std::vector<std::shared_ptr<ITexture>>        m_textures;
+        std::vector<std::shared_ptr<ITexture>>        textures_;
 
         vk::UniqueDescriptorPool             descriptorPool_;
         std::vector<vk::UniqueDescriptorSet> descriptorSets_;

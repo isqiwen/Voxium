@@ -50,9 +50,9 @@ namespace Voxium::Platform::Desktop::Vulkan
 
             cmd.endRenderPass();
 
-            FrameBuffer.transitionTexturesPost(cmd);
+            FrameBuffer.TransitionTexturesPost(cmd);
 
-            FrameBuffer.advance();
+            FrameBuffer.Advance();;
         }
         cmd.end();
     }

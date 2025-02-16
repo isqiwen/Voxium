@@ -1,6 +1,8 @@
 ﻿#pragma once
-#include "../../render/FrameBuffer.h"
-#include "vk_FrameBuffer_format.h"
+
+#include "Platform/Render/IFrameBuffer.h"
+
+#include "VkFrameBufferFormat.h"
 #include "VkTexture.h"
 
 namespace Voxium::Platform::Desktop::Vulkan
@@ -13,7 +15,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                            std::vector<vk::UniqueImageView>          imageViews,
                            const uint32_t                            width,
                            const uint32_t                            height) :
-            context_(std::move(context)), image_s(std::move(images)), image_Views(std::move(imageViews)),
+            context_(std::move(context)), images_(std::move(images)), imageViews_(std::move(imageViews)),
             width_(width), height_(height)
         {}
 
@@ -21,12 +23,12 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         [[nodiscard]] uint32_t GetHeight() override { return height_; }
 
-        [[nodiscard]] vk::ImageView& get() override { return *image_Views[readIndex_]; }
+        [[nodiscard]] vk::ImageView& Get() override { return *imageViews_[readIndex_]; }
 
     private:
         std::shared_ptr<VulkanContext>            context_;
-        std::vector<std::unique_ptr<VulkanImage>> image_s;
-        std::vector<vk::UniqueImageView>          image_Views;
+        std::vector<std::unique_ptr<VulkanImage>> images_;
+        std::vector<vk::UniqueImageView>          imageViews_;
         uint32_t                                  width_, height_;
         uint32_t                                  readIndex_ = 0;
 
@@ -36,44 +38,44 @@ namespace Voxium::Platform::Desktop::Vulkan
     class FrameBuffer final : public Voxium::Platform::Render::FrameBuffer
     {
     public:
-        FrameBuffer(std::shared_ptr<VulkanContext>     context,
+        FrameBuffer(std::shared_ptr<VulkanContext>      context,
                     std::shared_ptr<IFrameBufferFormat> format,
-                    uint32_t                           width,
-                    uint32_t                           height,
-                    uint32_t                           stages);
+                    uint32_t                            width,
+                    uint32_t                            height,
+                    uint32_t                            stages);
 
-        FrameBuffer(std::shared_ptr<VulkanContext>     context,
+        FrameBuffer(std::shared_ptr<VulkanContext>      context,
                     std::shared_ptr<IFrameBufferFormat> format,
-                    uint32_t                           width,
-                    uint32_t                           height,
-                    std::vector<vk::UniqueImageView>   imageViews,
-                    std::vector<vk::UniqueFrameBuffer> FrameBuffers);
+                    uint32_t                            width,
+                    uint32_t                            height,
+                    std::vector<vk::UniqueImageView>    imageViews,
+                    std::vector<vk::UniqueFrameBuffer>  FrameBuffers);
 
-        [[nodiscard]] const FrameBufferFormat&         GetFormat() const override { return *m_format; }
+        [[nodiscard]] const FrameBufferFormat&         GetFormat() const override { return *format_; }
         [[nodiscard]] uint32_t                         GetWidth() const override { return width_; }
         [[nodiscard]] uint32_t                         GetHeight() const override { return height_; }
         [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::Texture> GetTexture(const uint32_t attachment) override
         {
-            return m_textures[attachment];
+            return textures_[attachment];
         }
 
-        [[nodiscard]] vk::FrameBuffer& getTarget() { return *m_FrameBuffers[getWriteIndex()]; }
+        [[nodiscard]] vk::FrameBuffer& getTarget() { return *frameBuffers_[GetWriteIndex()]; }
 
-        void advance();
+        void Advance();;
 
-        void transitionTexturesPost(const vk::CommandBuffer& cmd);
+        void TransitionTexturesPost(const vk::CommandBuffer& cmd);
 
     private:
-        [[nodiscard]] uint32_t GetWriteIndex() const { return (m_writeIndex + 1) % m_FrameBuffers.size(); }
+        [[nodiscard]] uint32_t GetWriteIndex() const { return (writeIndex_ + 1) % frameBuffers_.size(); }
 
         std::shared_ptr<VulkanContext> context_;
 
-        const std::shared_ptr<IFrameBufferFormat> m_format;
-        const uint32_t                           width_, height_;
+        const std::shared_ptr<IFrameBufferFormat> format_;
+        const uint32_t                            width_, height_;
 
-        std::vector<vk::UniqueFrameBuffer>               m_FrameBuffers;
-        std::vector<std::shared_ptr<FrameBufferTexture>> m_textures;
-        uint32_t                                         m_writeIndex = 0;
-        bool                                             m_shouldTransition;
+        std::vector<vk::UniqueFrameBuffer>               frameBuffers_;
+        std::vector<std::shared_ptr<FrameBufferTexture>> textures_;
+        uint32_t                                         writeIndex_ = 0;
+        bool                                             shouldTransition_;
     };
 } // namespace Voxium::Platform::Desktop::Vulkan

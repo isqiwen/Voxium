@@ -11,7 +11,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         context_(std::move(context)), shader_(std::move(shader)), binding_(binding)
     {
         m_samplers.resize(stages);
-        m_textures.resize(stages);
+        textures_.resize(stages);
 
         descriptorPool_ = context_->CreateDescriptorPool(stages, vk::DescriptorType::eCombinedImageSampler);
         descriptorSets_ =
@@ -32,7 +32,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         }
 
         const vk::DescriptorImageInfo imageInfo {
-            m_samplers[writeIndex]->get(), m_textures[writeIndex]->get(), vk::ImageLayout::eShaderReadOnlyOptimal};
+            m_samplers[writeIndex]->get(), textures_[writeIndex]->get(), vk::ImageLayout::eShaderReadOnlyOptimal};
         const vk::WriteDescriptorSet write {*descriptorSets_[writeIndex],
                                             binding_,
                                             0,
@@ -46,7 +46,7 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         const auto nextWriteIndex  = (writeIndex + 1) % static_cast<uint32_t>(descriptorSets_.size());
         m_samplers[nextWriteIndex] = m_samplers[writeIndex];
-        m_textures[nextWriteIndex] = m_textures[writeIndex];
+        textures_[nextWriteIndex] = textures_[writeIndex];
 
         leftoverWrites_--;
         readIndex_ = writeIndex;
@@ -57,7 +57,7 @@ namespace Voxium::Platform::Desktop::Vulkan
     {
         const auto writeIndex  = (readIndex_ + 1) % static_cast<uint32_t>(descriptorSets_.size());
         m_samplers[writeIndex] = std::static_pointer_cast<TextureSampler>(sampler);
-        m_textures[writeIndex] = std::static_pointer_cast<Texture>(texture);
+        textures_[writeIndex] = std::static_pointer_cast<Texture>(texture);
 
         leftoverWrites_ = static_cast<uint32_t>(descriptorSets_.size());
     }

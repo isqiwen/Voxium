@@ -1,6 +1,8 @@
 ﻿#pragma once
+
 #include <memory>
 #include <mutex>
+
 #include <vulkan.h>
 
 #include "VkBuffer.h"
@@ -133,26 +135,26 @@ namespace Voxium::Platform::Desktop::Vulkan
         [[nodiscard]] vk::Result
         Present(const vk::Semaphore& WaitSemaphore, const vk::SwapchainKHR& swapChain, uint32_t imageIndex) const;
 
-        [[nodiscard]] const vk::Instance& Instance() { return *m_instance; }
+        [[nodiscard]] const vk::Instance& Instance() { return *instance_; }
 
     private:
-        std::vector<const char*>         m_requiredLayers;
-        vk::UniqueInstance               m_instance;
-        vk::UniqueDebugUtilsMessengerEXT m_debugMessenger;
+        std::vector<const char*>         requiredLayers_;
+        vk::UniqueInstance               instance_;
+        vk::UniqueDebugUtilsMessengerEXT debugMessenger_;
 
-        std::mutex               m_deviceInitLock;
-        bool                     m_deviceInitialized = false;
-        std::vector<const char*> m_requiredDeviceExtensions;
-        vk::PhysicalDevice       m_physicalDevice;
-        util::QueueFamilyIndices m_familyIndices;
-        vk::UniqueDevice         m_device;
-        vma::Allocator           m_memoryAllocator;
+        std::mutex               deviceInitLock_;
+        bool                     deviceInitialized_ = false;
+        std::vector<const char*> requiredDeviceExtensions_;
+        vk::PhysicalDevice       physicalDevice_;
+        util::QueueFamilyIndices familyIndices_;
+        vk::UniqueDevice         device_;
+        vma::Allocator           memoryAllocator_;
 
-        vk::Queue m_graphicsQueue;
-        vk::Queue m_presentQueue;
+        vk::Queue graphicsQueue_;
+        vk::Queue presentQueue_;
 
-        vk::UniqueCommandPool   m_commandPool;
-        vk::UniquePipelineCache m_pipelineCache;
+        vk::UniqueCommandPool   commandPool_;
+        vk::UniquePipelineCache pipelineCache_;
 
         friend class VulkanBuffer;
         friend class RenderPipeline;

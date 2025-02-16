@@ -4,7 +4,7 @@
 #include "../../render/render_surface.h"
 #include "../dt_render_context.h"
 #include "vk_FrameBuffer.h"
-#include "vk_FrameBuffer_format.h"
+#include "VkFrameBufferFormat.h"
 #include "vk_command_buffer.h"
 #include "VkContext.h"
 #include "VkTextureBinding.h"

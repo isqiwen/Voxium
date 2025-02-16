@@ -20,7 +20,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         auto buf = context_->CreateCpuToGpuTransferBuffer(data.data(), static_cast<uint32_t>(data.size()));
 
         util::DirectExecuteCommands(
-            *context_->m_device, *context_->m_commandPool, context_->m_graphicsQueue, [&](vk::CommandBuffer& cmd) {
+            *context_->device_, *context_->commandPool_, context_->graphicsQueue_, [&](vk::CommandBuffer& cmd) {
                 util::TransitionImageLayouts(cmd,
                                              {{image_->Get(),
                                                vk::ImageAspectFlagBits::eColor,

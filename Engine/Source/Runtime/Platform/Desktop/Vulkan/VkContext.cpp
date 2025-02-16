@@ -6,7 +6,7 @@
 
 namespace Voxium::Platform::Desktop::Vulkan
 {
-    std::vector<const char*> getRequiredLayers()
+    std::vector<const char*> GetRequiredLayers()
     {
         return std::vector<const char*> {
 #ifdef DB_DEBUG
@@ -15,7 +15,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         };
     }
 
-    std::vector<const char*> getRequiredInstanceExtensions()
+    std::vector<const char*> GetRequiredInstanceExtensions()
     {
         return std::vector<const char*> {
 #ifdef DB_DEBUG
@@ -24,7 +24,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         };
     }
 
-    std::vector<const char*> getRequiredDeviceExtensions()
+    std::vector<const char*> GetRequiredDeviceExtensions()
     {
         return std::vector<const char*> {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -32,7 +32,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         };
     }
 
-    vk::ApplicationInfo getApplicationInfo()
+    vk::ApplicationInfo GetApplicationInfo()
     {
         return vk::ApplicationInfo {
             "DigBuild", VK_MAKE_VERSION(1, 0, 0), "DigBuild", VK_MAKE_VERSION(1, 0, 0), VK_API_VERSION_1_0};
@@ -58,28 +58,28 @@ namespace Voxium::Platform::Desktop::Vulkan
     {
         util::InitializeDispatcher();
 
-        m_requiredLayers = getRequiredLayers();
-        if (!util::AreAllLayersAvailable(m_requiredLayers))
+        requiredLayers_ = GetRequiredLayers();
+        if (!util::AreAllLayersAvailable(requiredLayers_))
             throw std::runtime_error("Not all requested layers are available.");
 
-        const auto instanceExtensions = getRequiredInstanceExtensions();
+        const auto instanceExtensions = GetRequiredInstanceExtensions();
 
         std::vector<const char*> requiredExtensions;
         requiredExtensions.reserve(surfaceExtensions.size() + instanceExtensions.size());
         requiredExtensions.insert(requiredExtensions.end(), surfaceExtensions.begin(), surfaceExtensions.end());
         requiredExtensions.insert(requiredExtensions.end(), instanceExtensions.begin(), instanceExtensions.end());
 
-        const auto appInfo = getApplicationInfo();
-        m_instance         = vk::createInstanceUnique(vk::InstanceCreateInfo {{},
+        const auto appInfo = GetApplicationInfo();
+        instance_         = vk::createInstanceUnique(vk::InstanceCreateInfo {{},
                                                                       &appInfo,
-                                                                      static_cast<uint32_t>(m_requiredLayers.size()),
-                                                                      m_requiredLayers.data(),
+                                                                      static_cast<uint32_t>(requiredLayers_.size()),
+                                                                      requiredLayers_.data(),
                                                                       static_cast<uint32_t>(requiredExtensions.size()),
                                                                       requiredExtensions.data()});
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(*m_instance);
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(*instance_);
 
 #ifdef DB_DEBUG
-        m_debugMessenger = m_instance->createDebugUtilsMessengerEXTUnique(vk::DebugUtilsMessengerCreateInfoEXT(
+        debugMessenger_ = instance_->createDebugUtilsMessengerEXTUnique(vk::DebugUtilsMessengerCreateInfoEXT(
             {},
             vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
             vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
@@ -91,42 +91,42 @@ namespace Voxium::Platform::Desktop::Vulkan
     VulkanContext::~VulkanContext()
     {
         WaitIdle();
-        m_memoryAllocator.destroy();
+        memoryAllocator_.destroy();
     }
 
     bool VulkanContext::InitializeOrValidateDeviceCompatibility(const vk::SurfaceKHR& surface)
     {
-        m_deviceInitLock.lock();
-        if (m_deviceInitialized)
+        deviceInitLock_.lock();
+        if (deviceInitialized_)
         {
-            m_deviceInitLock.unlock();
+            deviceInitLock_.unlock();
             return ValidateDeviceCompatibility(surface);
         }
         const auto result = InitializeDevice(surface);
-        m_deviceInitLock.unlock();
+        deviceInitLock_.unlock();
         return result;
     }
 
     bool VulkanContext::InitializeDevice(const vk::SurfaceKHR& surface)
     {
-        m_requiredDeviceExtensions = getRequiredDeviceExtensions();
+        requiredDeviceExtensions_ = GetRequiredDeviceExtensions();
 
-        const auto deviceDescriptor = util::FindOptimalPhysicalDevice(*m_instance, surface, m_requiredDeviceExtensions);
-        m_physicalDevice            = deviceDescriptor.device;
-        m_familyIndices             = deviceDescriptor.familyIndices;
+        const auto deviceDescriptor = util::FindOptimalPhysicalDevice(*instance_, surface, requiredDeviceExtensions_);
+        physicalDevice_            = deviceDescriptor.device;
+        familyIndices_             = deviceDescriptor.familyIndices;
 
-        m_device =
-            util::CreateLogicalDevice(m_physicalDevice, m_familyIndices, m_requiredLayers, m_requiredDeviceExtensions);
+        device_ =
+            util::CreateLogicalDevice(physicalDevice_, familyIndices_, requiredLayers_, requiredDeviceExtensions_);
 
-        m_graphicsQueue = m_device->getQueue(m_familyIndices.graphicsFamily_.value(), 0);
-        m_presentQueue  = m_device->getQueue(m_familyIndices.presentFamily_.value(), 0);
+        graphicsQueue_ = device_->getQueue(familyIndices_.graphicsFamily_.value(), 0);
+        presentQueue_  = device_->getQueue(familyIndices_.presentFamily_.value(), 0);
 
-        m_commandPool   = util::CreateCommandPool(*m_device, m_familyIndices.graphicsFamily_.value());
-        m_pipelineCache = util::CreatePipelineCache(*m_device);
+        commandPool_   = util::CreateCommandPool(*device_, familyIndices_.graphicsFamily_.value());
+        pipelineCache_ = util::CreatePipelineCache(*device_);
 
-        m_memoryAllocator = vma::createAllocator({{},
-                                                  m_physicalDevice,
-                                                  *m_device,
+        memoryAllocator_ = vma::createAllocator({{},
+                                                  physicalDevice_,
+                                                  *device_,
                                                   0,
                                                   nullptr,
                                                   nullptr,
@@ -134,31 +134,31 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                   nullptr,
                                                   nullptr,
                                                   nullptr,
-                                                  *m_instance,
+                                                  *instance_,
                                                   VK_API_VERSION_1_0});
 
-        m_deviceInitialized = true;
+        deviceInitialized_ = true;
         return true;
     }
 
     bool VulkanContext::ValidateDeviceCompatibility(const vk::SurfaceKHR& surface) const
     {
-        return util::GetPhysicalDeviceDescriptor(m_physicalDevice, surface, m_requiredDeviceExtensions).has_value();
+        return util::GetPhysicalDeviceDescriptor(physicalDevice_, surface, requiredDeviceExtensions_).has_value();
     }
 
     void VulkanContext::WaitIdle() const
     {
-        if (m_presentQueue)
-            m_presentQueue.WaitIdle();
-        if (m_graphicsQueue)
-            m_graphicsQueue.WaitIdle();
-        if (m_device)
-            m_device->WaitIdle();
+        if (presentQueue_)
+            presentQueue_.WaitIdle();
+        if (graphicsQueue_)
+            graphicsQueue_.WaitIdle();
+        if (device_)
+            device_->WaitIdle();
     }
 
     [[nodiscard]] util::SwapChainDescriptor VulkanContext::GetSwapChainDescriptor(const vk::SurfaceKHR& surface) const
     {
-        return util::GetSwapChainDescriptor(m_physicalDevice, surface);
+        return util::GetSwapChainDescriptor(physicalDevice_, surface);
     }
 
     [[nodiscard]] vk::UniqueSwapchainKHR VulkanContext::CreateSwapChain(const vk::SurfaceKHR&      surface,
@@ -185,20 +185,20 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                        presentMode,
                                                        true,
                                                        oldSwapchain);
-        uint32_t queueFamilyIndices[] = {m_familyIndices.graphicsFamily_.value(), m_familyIndices.presentFamily_.value()};
-        if (m_familyIndices.graphicsFamily_ != m_familyIndices.presentFamily_)
+        uint32_t queueFamilyIndices[] = {familyIndices_.graphicsFamily_.value(), familyIndices_.presentFamily_.value()};
+        if (familyIndices_.graphicsFamily_ != familyIndices_.presentFamily_)
         {
             swapchainCreateInfo.imageSharingMode      = vk::SharingMode::eConcurrent;
             swapchainCreateInfo.queueFamilyIndexCount = 2;
             swapchainCreateInfo.pQueueFamilyIndices   = queueFamilyIndices;
         }
-        return m_device->CreateSwapChainKHRUnique(swapchainCreateInfo);
+        return device_->CreateSwapChainKHRUnique(swapchainCreateInfo);
     }
 
     [[nodiscard]] std::vector<vk::UniqueImageView>
     VulkanContext::CreateSwapChainViews(const vk::SwapchainKHR& swapChain, const vk::Format format) const
     {
-        const auto                       images = m_device->getSwapchainImagesKHR(swapChain);
+        const auto                       images = device_->getSwapchainImagesKHR(swapChain);
         std::vector<vk::UniqueImageView> views;
         views.reserve(images.size());
         for (const auto& image : images)
@@ -220,7 +220,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                           const vk::BorderColor        borderColor,
                                                           const bool                   unnormalizedCoords) const
     {
-        return m_device->createSamplerUnique({{},
+        return device_->createSamplerUnique({{},
                                               magFilter,
                                               minFilter,
                                               mipmapMode,
@@ -244,8 +244,8 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                             const vk::ImageUsageFlags     usageFlags,
                                                             const vk::MemoryPropertyFlags memoryProperties)
     {
-        const auto queueIndex = m_familyIndices.graphicsFamily_.value();
-        auto       image      = m_device->CreateImageUnique({{},
+        const auto queueIndex = familyIndices_.graphicsFamily_.value();
+        auto       image      = device_->CreateImageUnique({{},
                                                              vk::ImageType::e2D,
                                                              format,
                                                              vk::Extent3D {width, height, 1},
@@ -260,8 +260,8 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                              vk::ImageLayout::eUndefined});
 
         const auto memoryAllocation =
-            m_memoryAllocator.allocateMemoryForImage(*image, {{}, vma::MemoryUsage::eGpuOnly, memoryProperties});
-        m_memoryAllocator.bindImageMemory(memoryAllocation, *image);
+            memoryAllocator_.allocateMemoryForImage(*image, {{}, vma::MemoryUsage::eGpuOnly, memoryProperties});
+        memoryAllocator_.bindImageMemory(memoryAllocation, *image);
 
         return std::make_unique<VulkanImage>(shared_from_this(), std::move(image), memoryAllocation);
     }
@@ -270,7 +270,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                                      const vk::Format           format,
                                                                      const vk::ImageAspectFlags aspectFlags) const
     {
-        return m_device->CreateImageViewUnique(
+        return device_->CreateImageViewUnique(
             {{}, image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange {aspectFlags, 0, 1, 0, 1}});
     }
 
@@ -278,7 +278,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                                          const vk::Extent2D&               extent,
                                                                          const std::vector<vk::ImageView>& images) const
     {
-        return m_device->CreateFrameBufferUnique(
+        return device_->CreateFrameBufferUnique(
             {{}, pass, static_cast<uint32_t>(images.size()), images.data(), extent.width, extent.height, 1});
     }
 
@@ -346,19 +346,19 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         auto subpasses   = std::vector {subpass};
         auto subpassDeps = std::vector {subpassDependency};
-        return m_device->createRenderPassUnique({{}, attachments, subpasses, subpassDeps});
+        return device_->createRenderPassUnique({{}, attachments, subpasses, subpassDeps});
     }
 
     std::vector<vk::UniqueCommandBuffer> VulkanContext::CreateCommandBuffers(const uint32_t               stages,
                                                                              const vk::CommandBufferLevel level) const
     {
-        return m_device->allocateCommandBuffersUnique({*m_commandPool, level, stages});
+        return device_->allocateCommandBuffersUnique({*commandPool_, level, stages});
     }
 
     [[nodiscard]] util::StagingResource<vk::CommandBuffer>
     VulkanContext::CreateCommandBuffer(const uint32_t stages, const vk::CommandBufferLevel level) const
     {
-        auto commandBuffers = m_device->allocateCommandBuffersUnique({*m_commandPool, level, stages});
+        auto commandBuffers = device_->allocateCommandBuffersUnique({*commandPool_, level, stages});
         return util::StagingResource(std::move(commandBuffers));
     }
 
@@ -368,56 +368,56 @@ namespace Voxium::Platform::Desktop::Vulkan
                                 const vk::SharingMode         sharingMode,
                                 const vk::MemoryPropertyFlags memoryProperties)
     {
-        auto       buffer = m_device->CreateBufferUnique({{}, size, usage, sharingMode});
+        auto       buffer = device_->CreateBufferUnique({{}, size, usage, sharingMode});
         const auto memoryAllocation =
-            m_memoryAllocator.allocateMemoryForBuffer(*buffer, {{}, vma::MemoryUsage::eGpuOnly, memoryProperties});
-        m_memoryAllocator.bindBufferMemory(memoryAllocation, *buffer);
+            memoryAllocator_.allocateMemoryForBuffer(*buffer, {{}, vma::MemoryUsage::eGpuOnly, memoryProperties});
+        memoryAllocator_.bindBufferMemory(memoryAllocation, *buffer);
         return std::make_unique<VulkanBuffer>(shared_from_this(), std::move(buffer), memoryAllocation, size);
     }
 
     [[nodiscard]] std::unique_ptr<VulkanBuffer> VulkanContext::CreateCpuToGpuTransferBuffer(const void*    data,
                                                                                             const uint32_t size)
     {
-        auto buffer = m_device->CreateBufferUnique(
+        auto buffer = device_->CreateBufferUnique(
             {{}, size, vk::BufferUsageFlagBits::eTransferSrc, vk::SharingMode::eExclusive});
-        const auto memoryAllocation = m_memoryAllocator.allocateMemoryForBuffer(
+        const auto memoryAllocation = memoryAllocator_.allocateMemoryForBuffer(
             *buffer,
             {{},
              vma::MemoryUsage::eCpuToGpu,
              vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent});
-        m_memoryAllocator.bindBufferMemory(memoryAllocation, *buffer);
+        memoryAllocator_.bindBufferMemory(memoryAllocation, *buffer);
 
-        const auto memory = m_memoryAllocator.mapMemory(memoryAllocation);
+        const auto memory = memoryAllocator_.mapMemory(memoryAllocation);
         memcpy(memory, data, size);
-        m_memoryAllocator.unmapMemory(memoryAllocation);
+        memoryAllocator_.unmapMemory(memoryAllocation);
 
         return std::make_unique<VulkanBuffer>(shared_from_this(), std::move(buffer), memoryAllocation, size);
     }
 
     vk::UniqueShaderModule VulkanContext::CreateShaderModule(const std::vector<uint8_t>& bytes) const
     {
-        return m_device->CreateShaderModuleUnique({{}, bytes.size(), reinterpret_cast<const uint32_t*>(bytes.data())});
+        return device_->CreateShaderModuleUnique({{}, bytes.size(), reinterpret_cast<const uint32_t*>(bytes.data())});
     }
 
     vk::UniqueDescriptorSetLayout
     VulkanContext::CreateDescriptorSetLayout(const vk::DescriptorSetLayoutBinding& binding)
     {
         auto bindings = std::vector {binding};
-        return m_device->CreateDescriptorSetLayoutUnique({{}, bindings});
+        return device_->CreateDescriptorSetLayoutUnique({{}, bindings});
     }
 
     vk::UniqueDescriptorPool VulkanContext::CreateDescriptorPool(const uint32_t           maxSets,
                                                                  const vk::DescriptorType type) const
     {
         auto poolSizes = std::vector {vk::DescriptorPoolSize {type, maxSets}};
-        return m_device->CreateDescriptorPoolUnique(
+        return device_->CreateDescriptorPoolUnique(
             {vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet, maxSets, poolSizes});
     }
 
     void VulkanContext::UpdateDescriptorSets(const std::vector<vk::WriteDescriptorSet>& writes,
                                              const std::vector<vk::CopyDescriptorSet>&  copies) const
     {
-        m_device->UpdateDescriptorSets(writes, copies);
+        device_->UpdateDescriptorSets(writes, copies);
     }
 
     std::vector<vk::UniqueDescriptorSet> VulkanContext::CreateDescriptorSets(vk::DescriptorPool&      descriptorPool,
@@ -428,7 +428,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         vector.reserve(count);
         for (auto i = 0u; i < count; ++i)
             vector.push_back(layout);
-        return m_device->allocateDescriptorSetsUnique(vk::DescriptorSetAllocateInfo {descriptorPool, vector});
+        return device_->allocateDescriptorSetsUnique(vk::DescriptorSetAllocateInfo {descriptorPool, vector});
     }
 
     [[nodiscard]] util::StagingResource<vk::Semaphore> VulkanContext::CreateSemaphore(const uint32_t stages) const
@@ -436,7 +436,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         std::vector<vk::UniqueSemaphore> semaphores;
         semaphores.reserve(stages);
         for (auto i = 0u; i < stages; ++i)
-            semaphores.push_back(m_device->CreateSemaphoreUnique({}));
+            semaphores.push_back(device_->CreateSemaphoreUnique({}));
         return util::StagingResource<vk::Semaphore>(std::move(semaphores));
     }
 
@@ -449,20 +449,20 @@ namespace Voxium::Platform::Desktop::Vulkan
         std::vector<vk::UniqueFence> fences;
         fences.reserve(stages);
         for (auto i = 0u; i < stages; ++i)
-            fences.push_back(m_device->CreateFenceUnique(createInfo));
+            fences.push_back(device_->CreateFenceUnique(createInfo));
         return util::StagingResource<vk::Fence>(std::move(fences));
     }
 
     void VulkanContext::Wait(const vk::Fence& fence) const
     {
-        const auto result = m_device->WaitForFences(1, &fence, true, UINT64_MAX);
+        const auto result = device_->WaitForFences(1, &fence, true, UINT64_MAX);
         if (result != vk::Result::eSuccess)
             throw std::runtime_error("Failed to Wait for fence.");
     }
 
     void VulkanContext::Reset(const vk::Fence& fence) const
     {
-        const auto result = m_device->resetFences(1, &fence);
+        const auto result = device_->resetFences(1, &fence);
         if (result != vk::Result::eSuccess)
             throw std::runtime_error("Failed to reset fence.");
     }
@@ -470,7 +470,7 @@ namespace Voxium::Platform::Desktop::Vulkan
     vk::ResultValue<uint32_t> VulkanContext::AcquireNextImage(const vk::SwapchainKHR& swapChain,
                                                               const vk::Semaphore&    semaphore) const
     {
-        return m_device->AcquireNextImageKHR(swapChain, UINT64_MAX, semaphore, nullptr);
+        return device_->AcquireNextImageKHR(swapChain, UINT64_MAX, semaphore, nullptr);
     }
 
     void VulkanContext::Submit(const vk::CommandBuffer& commandBuffer,
@@ -480,7 +480,7 @@ namespace Voxium::Platform::Desktop::Vulkan
     {
         vk::PipelineStageFlags WaitFlags = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::SubmitInfo         SubmitInfo {1, &WaitSemaphore, &WaitFlags, 1, &commandBuffer, 1, &signalSemaphore};
-        const auto             result = m_graphicsQueue.Submit(1, &SubmitInfo, fence);
+        const auto             result = graphicsQueue_.Submit(1, &SubmitInfo, fence);
         if (result != vk::Result::eSuccess)
             throw std::runtime_error("Failed to Submit work.");
     }
@@ -490,6 +490,6 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                     const uint32_t          imageIndex) const
     {
         vk::PresentInfoKHR presentInfo {1, &WaitSemaphore, 1, &swapChain, &imageIndex, nullptr};
-        return m_presentQueue.presentKHR(&presentInfo);
+        return presentQueue_.presentKHR(&presentInfo);
     }
 } // namespace Voxium::Platform::Desktop::Vulkan

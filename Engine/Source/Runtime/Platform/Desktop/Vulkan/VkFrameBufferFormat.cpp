@@ -1,4 +1,4 @@
-﻿#include "vk_FrameBuffer_format.h"
+﻿#include "VkFrameBufferFormat.h"
 
 #include <iterator>
 
@@ -102,7 +102,7 @@ namespace Voxium::Platform::Desktop::Vulkan
             stageID++;
         }
 
-        renderPass_ = context_->m_device->createRenderPassUnique(
+        renderPass_ = context_->device_->createRenderPassUnique(
             {{}, attachmentDescriptions, subpassDescriptions, subpassDependencies});
     }
 

@@ -1,5 +1,4 @@
 ﻿#include "VkBuffer.h"
-
 #include "VkContext.h"
 
 namespace Voxium::Platform::Desktop::Vulkan
@@ -11,5 +10,5 @@ namespace Voxium::Platform::Desktop::Vulkan
         context_(std::move(context)), buffer_(std::move(buffer)), memoryAllocation_(memoryAllocation), size_(size)
     {}
 
-    VulkanBuffer::~VulkanBuffer() { context_->m_memoryAllocator.freeMemory(memoryAllocation_); }
+    VulkanBuffer::~VulkanBuffer() { context_->memoryAllocator_.freeMemory(memoryAllocation_); }
 } // namespace Voxium::Platform::Desktop::Vulkan

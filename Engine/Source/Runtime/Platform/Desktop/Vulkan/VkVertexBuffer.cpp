@@ -15,9 +15,9 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         auto buf = context_->CreateCpuToGpuTransferBuffer(data.data(), static_cast<uint32_t>(data.size()));
 
-        util::CopyBufferToBufferImmediate(*context_->m_device,
-                                          *context_->m_commandPool,
-                                          context_->m_graphicsQueue,
+        util::CopyBufferToBufferImmediate(*context_->device_,
+                                          *context_->commandPool_,
+                                          context_->graphicsQueue_,
                                           buf->Buffer(),
                                           buffer_->Buffer(),
                                           static_cast<uint32_t>(data.size()));
@@ -56,9 +56,9 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         auto buf = context_->CreateCpuToGpuTransferBuffer(data.data(), static_cast<uint32_t>(data.size()));
 
-        util::CopyBufferToBufferImmediate(*context_->m_device,
-                                          *context_->m_commandPool,
-                                          context_->m_graphicsQueue,
+        util::CopyBufferToBufferImmediate(*context_->device_,
+                                          *context_->commandPool_,
+                                          context_->graphicsQueue_,
                                           buf->Buffer(),
                                           buffer->Buffer(),
                                           static_cast<uint32_t>(data.size()));
