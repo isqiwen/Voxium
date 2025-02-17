@@ -2,7 +2,7 @@
 
 #include "../dt_render_surface.h"
 #include "vk_command_buffer.h"
-#include "vk_render_pipeline.h"
+#include "VkRenderPipeline.h"
 #include "VkShader.h"
 #include "VkTextureBinding.h"
 #include "vk_texture_sampler.h"
@@ -42,7 +42,7 @@ namespace Voxium::Platform::Desktop::Vulkan
 
             cmd.beginRenderPass({format.GetPass(),
                                  FrameBuffer.getTarget(),
-                                 {{0, 0}, {FrameBuffer.getWidth(), FrameBuffer.getHeight()}},
+                                 {{0, 0}, {FrameBuffer.GetWidth(), FrameBuffer.GetHeight()}},
                                  clearValues},
                                 vk::SubpassContents::eSecondaryCommandBuffers);
 
@@ -74,7 +74,7 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         m_swapChainStages        = swapChainDesc.GetOptimalImageCount();
         const auto surfaceFormat = swapChainDesc.GetOptimalFormat();
-        const auto surfaceExtent = swapChainDesc.GetOptimalExtent(surface_.getWidth(), surface_.getHeight());
+        const auto surfaceExtent = swapChainDesc.GetOptimalExtent(surface_.GetWidth(), surface_.GetHeight());
 
         m_swapChain = context_->CreateSwapChain(*m_vkSurface,
                                                  m_swapChainStages,
@@ -180,7 +180,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         m_currentFrame = (m_currentFrame + 1) % m_maxFramesInFlight;
     }
 
-    std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat>
+    std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat>
     RenderContext::CreateFrameBufferFormat(const std::vector<Voxium::Platform::Render::FrameBufferAttachmentDescriptor>&  attachments,
                                            const std::vector<Voxium::Platform::Render::FrameBufferRenderStageDescriptor>& renderStages)
     {
@@ -188,7 +188,7 @@ namespace Voxium::Platform::Desktop::Vulkan
     }
 
     std::shared_ptr<Voxium::Platform::Render::FrameBuffer>
-    RenderContext::CreateFrameBuffer(const std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat>& format,
+    RenderContext::CreateFrameBuffer(const std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat>& format,
                                      const uint32_t                                    width,
                                      const uint32_t                                    height)
     {
@@ -203,8 +203,8 @@ namespace Voxium::Platform::Desktop::Vulkan
         return std::make_shared<Shader>(context_, type, data, bindings);
     }
 
-    std::shared_ptr<Voxium::Platform::Render::RenderPipeline>
-    RenderContext::CreatePipeline(const std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat>&   format,
+    std::shared_ptr<Voxium::Platform::Render::IRenderPipeline>
+    RenderContext::CreatePipeline(const std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat>&   format,
                                   const uint32_t                                      stage,
                                   const std::vector<std::shared_ptr<Voxium::Platform::Render::Shader>>& shaders,
                                   const Voxium::Platform::Render::VertexFormatDescriptor&               vertexFormat,
@@ -227,7 +227,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                 blendOptions);
     }
 
-    std::shared_ptr<Voxium::Platform::Render::UniformBinding>
+    std::shared_ptr<Voxium::Platform::Render::IUniformBinding>
     RenderContext::CreateUniformBinding(const std::shared_ptr<Voxium::Platform::Render::Shader>&        shader,
                                         const uint32_t                                binding,
                                         const std::shared_ptr<Voxium::Platform::Render::UniformBuffer>& uniformBuffer)
@@ -261,7 +261,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         return std::make_shared<StaticVertexBuffer>(context_, initialData, vertexSize);
     }
 
-    std::shared_ptr<Voxium::Platform::Render::TextureBinding>
+    std::shared_ptr<Voxium::Platform::Render::ITextureBinding>
     RenderContext::CreateTextureBinding(const std::shared_ptr<Voxium::Platform::Render::Shader>&         shader,
                                         const uint32_t                                 binding,
                                         const std::shared_ptr<Voxium::Platform::Render::TextureSampler>& sampler,

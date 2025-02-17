@@ -1,6 +1,6 @@
 #include "DtContext.h"
 
-#include <GLFW.h>
+#include <GLFW/glfw3.h>
 
 namespace Voxium::Platform::Desktop
 {

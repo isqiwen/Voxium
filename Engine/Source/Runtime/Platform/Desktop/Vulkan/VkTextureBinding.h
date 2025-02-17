@@ -9,7 +9,7 @@
 
 namespace Voxium::Platform::Desktop::Vulkan
 {
-    class TextureBinding final : public Voxium::Platform::Render::TextureBinding
+    class TextureBinding final : public Voxium::Platform::Render::ITextureBinding
     {
     public:
         TextureBinding(std::shared_ptr<VulkanContext>                 context,
@@ -25,9 +25,9 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         [[nodiscard]] vk::DescriptorSet& get() { return *descriptorSets_[readIndex_]; }
 
-        [[nodiscard]] std::shared_ptr<IShader>& getShader() { return shader_; }
+        [[nodiscard]] std::shared_ptr<IShader>& GetShader() { return shader_; }
 
-        [[nodiscard]] uint32_t getBinding() const { return binding_; }
+        [[nodiscard]] uint32_t GetBinding() const { return binding_; }
 
     private:
         std::shared_ptr<VulkanContext> context_;

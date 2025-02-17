@@ -1,4 +1,4 @@
-﻿#include "vk_render_pipeline.h"
+﻿#include "VkRenderPipeline.h"
 
 namespace Voxium::Platform::Desktop::Vulkan
 {
@@ -298,7 +298,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                    const Voxium::Platform::Render::VertexFormatDescriptor&    instanceFormat,
                                    const Voxium::Platform::Render::RenderState                state,
                                    const std::vector<Voxium::Platform::Render::BlendOptions>& blendOptions) :
-        context_(std::move(context)), m_format(std::move(format)), shader_s(std::move(shaders))
+        context_(std::move(context)), format_(std::move(format)), shader_s(std::move(shaders))
     {
         std::vector<vk::VertexInputBindingDescription>   vertexBindings;
         std::vector<vk::VertexInputAttributeDescription> vertexAttributes;
@@ -353,9 +353,9 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                                              1.0f};
 
         std::vector<vk::PipelineColorBlendAttachmentState> blendAttachments;
-        for (auto i = 0u; i < m_format->GetAttachmentCount(); ++i)
+        for (auto i = 0u; i < format_->GetAttachmentCount(); ++i)
         {
-            if (m_format->GetAttachments()[i].type == Voxium::Platform::Render::FrameBufferAttachmentType::COLOR)
+            if (format_->GetAttachments()[i].type == Voxium::Platform::Render::FrameBufferAttachmentType::COLOR)
                 blendAttachments.push_back(toVulkan(blendOptions[i]));
         }
         vk::PipelineColorBlendStateCreateInfo colorBlendStateCreateInfo {
@@ -382,7 +382,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         for (const auto& shader : shader_s)
             pipelineShaderStageCreateInfos.push_back({{}, shader->GetStage(), shader->GetModule(), "main", {}});
 
-        m_pipeline = context_->device_
+        pipeline_ = context_->device_
                          ->createGraphicsPipelineUnique(*context_->pipelineCache_,
                                                         {{},
                                                          pipelineShaderStageCreateInfos,
@@ -396,7 +396,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                          &colorBlendStateCreateInfo,
                                                          &dynamicStateCreateInfo,
                                                          m_layout.get(),
-                                                         m_format->GetPass(),
+                                                         format_->GetPass(),
                                                          stage,
                                                          nullptr,
                                                          -1})

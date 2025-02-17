@@ -1,4 +1,4 @@
-﻿#include "vk_FrameBuffer.h"
+﻿#include "VkFrameBuffer.h"
 
 namespace Voxium::Platform::Desktop::Vulkan
 {
@@ -31,10 +31,10 @@ namespace Voxium::Platform::Desktop::Vulkan
                              const uint32_t                     width,
                              const uint32_t                     height,
                              const uint32_t                     stages) :
-        context_(std::move(context)), m_format(std::move(format)), width_(width), height_(height),
+        context_(std::move(context)), format_(std::move(format)), width_(width), height_(height),
         shouldTransition_(true)
     {
-        const auto& attachments = m_format->GetAttachments();
+        const auto& attachments = format_->GetAttachments();
         textures_.reserve(attachments.size());
 
         std::vector<std::vector<vk::ImageView>> FrameBufferViews;
@@ -76,7 +76,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                 std::make_shared<FrameBufferTexture>(context_, std::move(images), std::move(views), width, height));
         }
 
-        frameBuffers_ = context_->CreateFrameBuffers(m_format->GetPass(), {width, height}, FrameBufferViews);
+        frameBuffers_ = context_->CreateFrameBuffers(format_->GetPass(), {width, height}, FrameBufferViews);
     }
 
     FrameBuffer::FrameBuffer(std::shared_ptr<VulkanContext>     context,
@@ -85,7 +85,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                              const uint32_t                     height,
                              std::vector<vk::UniqueImageView>   imageViews,
                              std::vector<vk::UniqueFrameBuffer> FrameBuffers) :
-        context_(std::move(context)), m_format(std::move(format)), width_(width), height_(height),
+        context_(std::move(context)), format_(std::move(format)), width_(width), height_(height),
         frameBuffers_(std::move(FrameBuffers)), writeIndex_(static_cast<uint32_t>(imageViews.size() - 1)),
         shouldTransition_(false)
     {
@@ -105,7 +105,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         if (!shouldTransition_)
             return;
 
-        const auto& attachments = m_format->GetAttachments();
+        const auto& attachments = format_->GetAttachments();
 
         auto i = 0u;
         for (auto& texture : textures_)

@@ -1,5 +1,5 @@
 find_package(kainjow_mustache REQUIRED)
-include(${VOXIUM_ROOT_DIR}/Engine/ThirdParty/LLVM.cmake)
+include(${THIRD_PARTY_DIR}/LLVM.cmake)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

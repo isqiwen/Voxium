@@ -2,7 +2,7 @@ include_guard(GLOBAL)
 
 set(VULKAN_SDK_PATH "${THIRD_PARTY_DIR}/VulkanSDK")
 
-set(VULKAN_INCLUDE_DIRS "${VULKAN_SDK_PATH}/include")
+set(VULKAN_INCLUDE_DIRS "${VULKAN_SDK_PATH}/include/vulkan")
 
 if(WIN32)
     set(VULKAN_LIBRARY "${VULKAN_SDK_PATH}/lib/Win32/vulkan-1.lib")
@@ -21,17 +21,15 @@ else()
     message(FATAL_ERROR "Unknown platform: Vulkan SDK path not set.")
 endif()
 
-set(Vulkan_LIBRARIES ${VULKAN_LIBRARY})
-
 add_library(Vulkan::Vulkan UNKNOWN IMPORTED)
 set_target_properties(Vulkan::Vulkan PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${Vulkan_INCLUDE_DIRS}"
-    IMPORTED_LOCATION "${Vulkan_LIBRARIES}"
+    INTERFACE_INCLUDE_DIRECTORIES "${VULKAN_INCLUDE_DIRS}"
+    IMPORTED_LOCATION "${VULKAN_LIBRARY}"
 )
 
 set(GLSLANG_VALIDATOR ${GLSLANG_VALIDATOR_EXECUTABLE} CACHE STRING "Path to glslangValidator")
 
 message(STATUS "Vulkan SDK found at: ${VULKAN_SDK_PATH}")
-message(STATUS "Vulkan Include: ${Vulkan_INCLUDE_DIRS}")
-message(STATUS "Vulkan Library: ${Vulkan_LIBRARIES}")
+message(STATUS "Vulkan Include: ${VULKAN_INCLUDE_DIRS}")
+message(STATUS "Vulkan Library: ${VULKAN_LIBRARY}")
 message(STATUS "GLSL Compiler: ${GLSLANG_VALIDATOR_EXECUTABLE}")

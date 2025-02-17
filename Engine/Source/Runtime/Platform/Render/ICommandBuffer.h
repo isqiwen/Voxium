@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Platform/Utilss/VecMath.h"
+#include "Platform/Utils/VecMath.h"
 
 #include "IFrameBufferFormat.h"
 #include "IRenderPipeline.h"

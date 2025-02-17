@@ -2,9 +2,12 @@ find_package(nlohmann_json REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(glm REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(glfw3 REQUIRED)
 
-file(GLOB_RECURSE HEADER_FILES "Core/*.h")
-file(GLOB_RECURSE SOURCE_FILES "Core/*.cpp")
+include(${THIRD_PARTY_DIR}/Vulkan.cmake)
+
+file(GLOB_RECURSE HEADER_FILES "Core/*.h" "Platform/*.h")
+file(GLOB_RECURSE SOURCE_FILES "Core/*.cpp" "Platform/*.cpp")
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES})
 
@@ -16,6 +19,8 @@ target_link_libraries(
         spdlog::spdlog_header_only
         glm::glm
         ZLIB::ZLIB
+        glfw
+        Vulkan::Vulkan
 )
 
 set_target_properties(${RUNTIME_TARGET} PROPERTIES FOLDER "Engine")

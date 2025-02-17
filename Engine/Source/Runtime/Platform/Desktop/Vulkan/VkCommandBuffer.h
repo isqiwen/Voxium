@@ -17,138 +17,145 @@ namespace Voxium::Platform::Desktop::Vulkan
         CBCmd& operator=(const CBCmd& other)     = delete;
         CBCmd& operator=(CBCmd&& other) noexcept = delete;
 
-        virtual void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) = 0;
+        virtual void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) = 0;
     };
 
     class CBCmdBegin final : public CBCmd
     {
     public:
-        explicit CBCmdBegin(std::shared_ptr<IFrameBufferFormat> format) : m_format(std::move(format)) {}
+        explicit CBCmdBegin(std::shared_ptr<IFrameBufferFormat> format) : format_(std::move(format)) {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
 
     private:
-        std::shared_ptr<IFrameBufferFormat> m_format;
+        std::shared_ptr<IFrameBufferFormat> format_;
     };
+
     class CBCmdEnd final : public CBCmd
     {
     public:
         explicit CBCmdEnd() {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
     };
+
     class CBCmdSetViewportScissor final : public CBCmd
     {
     public:
         explicit CBCmdSetViewportScissor(std::shared_ptr<Voxium::Platform::Render::IRenderTarget> renderTarget) :
-            m_renderTarget(std::move(renderTarget))
+            renderTarget_(std::move(renderTarget))
         {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
 
     private:
-        std::shared_ptr<Voxium::Platform::Render::IRenderTarget> m_renderTarget;
+        std::shared_ptr<Voxium::Platform::Render::IRenderTarget> renderTarget_;
     };
+
     class CBCmdSetViewport final : public CBCmd
     {
     public:
-        explicit CBCmdSetViewport(const platform::util::Extents2D extents) : m_extents(extents) {}
+        explicit CBCmdSetViewport(const Voxium::Platform::Utils::Extents2D extents) : extents_(extents) {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
 
     private:
-        platform::util::Extents2D m_extents;
+        Voxium::Platform::Utils::Extents2D extents_;
     };
+
     class CBCmdSetScissor final : public CBCmd
     {
     public:
-        explicit CBCmdSetScissor(const platform::util::Extents2D extents) : m_extents(extents) {}
+        explicit CBCmdSetScissor(const Voxium::Platform::Utils::Extents2D extents) : extents_(extents) {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
 
     private:
-        platform::util::Extents2D m_extents;
+        Voxium::Platform::Utils::Extents2D extents_;
     };
+
     class CBCmdBindUniform final : public CBCmd
     {
     public:
-        explicit CBCmdBindUniform(std::shared_ptr<Voxium::Platform::Render::RenderPipeline> pipeline,
-                                  std::shared_ptr<Voxium::Platform::Render::UniformBinding> uniformBinding,
+        explicit CBCmdBindUniform(std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline,
+                                  std::shared_ptr<Voxium::Platform::Render::IUniformBinding> uniformBinding,
                                   const uint32_t                          binding) :
-            m_pipeline(std::move(pipeline)), m_uniformBinding(std::move(uniformBinding)), binding_(binding)
+            pipeline_(std::move(pipeline)), uniformBinding_(std::move(uniformBinding)), binding_(binding)
         {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
 
     private:
-        std::shared_ptr<Voxium::Platform::Render::RenderPipeline> m_pipeline;
-        std::shared_ptr<Voxium::Platform::Render::UniformBinding> m_uniformBinding;
-        uint32_t                                binding_;
+        std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline_;
+        std::shared_ptr<Voxium::Platform::Render::IUniformBinding> uniformBinding_;
+        uint32_t                                                   binding_;
     };
+
     class CBCmdBindTexture final : public CBCmd
     {
     public:
-        explicit CBCmdBindTexture(std::shared_ptr<Voxium::Platform::Render::RenderPipeline> pipeline,
-                                  std::shared_ptr<Voxium::Platform::Render::TextureBinding> binding) :
-            m_pipeline(std::move(pipeline)), binding_(std::move(binding))
+        explicit CBCmdBindTexture(std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline,
+                                  std::shared_ptr<Voxium::Platform::Render::ITextureBinding> binding) :
+            pipeline_(std::move(pipeline)), binding_(std::move(binding))
         {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
 
     private:
-        std::shared_ptr<Voxium::Platform::Render::RenderPipeline> m_pipeline;
-        std::shared_ptr<Voxium::Platform::Render::TextureBinding> binding_;
+        std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline_;
+        std::shared_ptr<Voxium::Platform::Render::ITextureBinding> binding_;
     };
+
     class CBCmdDraw final : public CBCmd
     {
     public:
-        explicit CBCmdDraw(std::shared_ptr<Voxium::Platform::Render::RenderPipeline> pipeline,
+        explicit CBCmdDraw(std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline,
                            std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   vertexBuffer,
                            std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   instanceBuffer) :
-            m_pipeline(std::move(pipeline)), m_vertexBuffer(std::move(vertexBuffer)),
-            instance_Buffer(std::move(instanceBuffer))
+            pipeline_(std::move(pipeline)), vertexBuffer_(std::move(vertexBuffer)),
+            instanceBuffer_(std::move(instanceBuffer))
         {}
 
-        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::Resource>>& resources) override;
+        void Record(vk::CommandBuffer& cmd, std::vector<std::shared_ptr<Voxium::Platform::Render::IResource>>& resources) override;
 
     private:
-        std::shared_ptr<Voxium::Platform::Render::RenderPipeline> m_pipeline;
-        std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   m_vertexBuffer;
-        std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   instance_Buffer;
+        std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline_;
+        std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   vertexBuffer_;
+        std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   instanceBuffer_;
     };
 
-    class CommandBuffer final : public Voxium::Platform::Render::CommandBuffer, public IScalableStagingResource
+    class CommandBuffer final : public Voxium::Platform::Render::ICommandBuffer, public IScalableStagingResource
     {
     public:
         CommandBuffer(std::shared_ptr<VulkanContext> context, uint32_t stages);
 
-        void tick();
+        void Tick();
 
-        void reserve(uint32_t stages) override;
+        void Reserve(uint32_t stages) override;
 
-        void BeginRecording(const std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat>& format) override;
+        void BeginRecording(const std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat>& format) override;
         void SetViewportAndScissor(std::shared_ptr<Voxium::Platform::Render::IRenderTarget> renderTarget) override;
-        void SetViewport(platform::util::Extents2D extents) override;
-        void SetScissor(platform::util::Extents2D extents) override;
-        void BindUniform(std::shared_ptr<Voxium::Platform::Render::RenderPipeline> pipeline,
-                         std::shared_ptr<Voxium::Platform::Render::UniformBinding> uniformBinding,
+        void SetViewport(Voxium::Platform::Utils::Extents2D extents) override;
+        void SetScissor(Voxium::Platform::Utils::Extents2D extents) override;
+        void BindUniform(std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline,
+                         std::shared_ptr<Voxium::Platform::Render::IUniformBinding> uniformBinding,
                          uint32_t                                binding) override;
-        void BindTexture(std::shared_ptr<Voxium::Platform::Render::RenderPipeline> pipeline,
-                         std::shared_ptr<Voxium::Platform::Render::TextureBinding> binding) override;
-        void Draw(std::shared_ptr<Voxium::Platform::Render::RenderPipeline> pipeline,
+        void BindTexture(std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline,
+                         std::shared_ptr<Voxium::Platform::Render::ITextureBinding> binding) override;
+        void Draw(std::shared_ptr<Voxium::Platform::Render::IRenderPipeline> pipeline,
                   std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   vertexBuffer,
                   std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>   instanceBuffer) override;
         void FinishRecording() override;
 
-        [[nodiscard]] vk::CommandBuffer& get();
+        [[nodiscard]] vk::CommandBuffer& Get();
 
     private:
         std::shared_ptr<VulkanContext> context_;
 
-        std::vector<vk::UniqueCommandBuffer>                m_commandBuffers;
-        std::vector<std::vector<std::shared_ptr<Resource>>> m_resources;
-        std::vector<std::unique_ptr<CBCmd>>                 m_commandQueue;
-        uint32_t                                            readIndex_      = 0;
-        uint32_t                                            leftoverWrites_ = 0;
+        std::vector<vk::UniqueCommandBuffer>                 commandBuffers_;
+        std::vector<std::vector<std::shared_ptr<IResource>>> resources_;
+        std::vector<std::unique_ptr<CBCmd>>                  commandQueue_;
+        uint32_t                                             readIndex_      = 0;
+        uint32_t                                             leftoverWrites_ = 0;
     };
 } // namespace Voxium::Platform::Desktop::Vulkan

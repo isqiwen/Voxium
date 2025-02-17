@@ -3,7 +3,7 @@
 
 #include "../../render/render_surface.h"
 #include "../dt_render_context.h"
-#include "vk_FrameBuffer.h"
+#include "VkFrameBuffer.h"
 #include "VkFrameBufferFormat.h"
 #include "vk_command_buffer.h"
 #include "VkContext.h"
@@ -43,14 +43,14 @@ namespace Voxium::Platform::Desktop::Vulkan
         void UpdateFirst() override;
         void UpdateLast() override;
 
-        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat> GetSurfaceFormat() override { return surface_Format; }
+        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat> GetSurfaceFormat() override { return surface_Format; }
 
-        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat>
+        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat>
         CreateFrameBufferFormat(const std::vector<Voxium::Platform::Render::FrameBufferAttachmentDescriptor>&  attachments,
                                 const std::vector<Voxium::Platform::Render::FrameBufferRenderStageDescriptor>& renderStages) override;
 
         [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::FrameBuffer>
-        CreateFrameBuffer(const std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat>& format,
+        CreateFrameBuffer(const std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat>& format,
                           uint32_t                                          width,
                           uint32_t                                          height) override;
 
@@ -59,8 +59,8 @@ namespace Voxium::Platform::Desktop::Vulkan
                      const std::vector<uint8_t>&               data,
                      const std::vector<Voxium::Platform::Render::ShaderBinding>& bindings) override;
 
-        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::RenderPipeline>
-        CreatePipeline(const std::shared_ptr<Voxium::Platform::Render::FrameBufferFormat>&   format,
+        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::IRenderPipeline>
+        CreatePipeline(const std::shared_ptr<Voxium::Platform::Render::IFrameBufferFormat>&   format,
                        uint32_t                                            stage,
                        const std::vector<std::shared_ptr<Voxium::Platform::Render::Shader>>& shaders,
                        const Voxium::Platform::Render::VertexFormatDescriptor&               vertexFormat,
@@ -68,7 +68,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                        Voxium::Platform::Render::RenderState                                 state,
                        const std::vector<Voxium::Platform::Render::BlendOptions>&            blendOptions) override;
 
-        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::UniformBinding>
+        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::IUniformBinding>
         CreateUniformBinding(const std::shared_ptr<Voxium::Platform::Render::Shader>&        shader,
                              uint32_t                                      binding,
                              const std::shared_ptr<Voxium::Platform::Render::UniformBuffer>& uniformBuffer) override;
@@ -79,7 +79,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::IVertexBuffer>
         CreateVertexBuffer(const std::vector<uint8_t>& initialData, uint32_t vertexSize, bool writable) override;
 
-        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::TextureBinding>
+        [[nodiscard]] std::shared_ptr<Voxium::Platform::Render::ITextureBinding>
         CreateTextureBinding(const std::shared_ptr<Voxium::Platform::Render::Shader>&         shader,
                              uint32_t                                       binding,
                              const std::shared_ptr<Voxium::Platform::Render::TextureSampler>& sampler,
