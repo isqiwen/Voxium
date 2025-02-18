@@ -10,16 +10,16 @@ namespace Voxium::Platform::Desktop::Vulkan
     class RenderPipeline final : public Voxium::Platform::Render::IRenderPipeline
     {
     public:
-        RenderPipeline(std::shared_ptr<VulkanContext>           context,
+        RenderPipeline(std::shared_ptr<VulkanContext>            context,
                        std::shared_ptr<IFrameBufferFormat>       format,
-                       uint32_t                                 stage,
+                       uint32_t                                  stage,
                        std::vector<std::shared_ptr<IShader>>     shaders,
                        const Voxium::Platform::Render::VertexFormatDescriptor&    vertexFormat,
                        const Voxium::Platform::Render::VertexFormatDescriptor&    instanceFormat,
                        Voxium::Platform::Render::RenderState                      state,
                        const std::vector<Voxium::Platform::Render::BlendOptions>& blendOptions);
 
-        [[nodiscard]] vk::Pipeline& get() { return *pipeline_; }
+        [[nodiscard]] vk::Pipeline& Get() { return *pipeline_; }
 
         [[nodiscard]] vk::PipelineLayout& GetLayout() { return *m_layout; }
 
