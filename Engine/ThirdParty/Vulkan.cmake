@@ -2,7 +2,7 @@ include_guard(GLOBAL)
 
 set(VULKAN_SDK_PATH "${THIRD_PARTY_DIR}/VulkanSDK")
 
-set(VULKAN_INCLUDE_DIRS "${VULKAN_SDK_PATH}/include/vulkan")
+set(VULKAN_INCLUDE_DIRS "${VULKAN_SDK_PATH}/include")
 
 if(WIN32)
     set(VULKAN_LIBRARY "${VULKAN_SDK_PATH}/lib/Win32/vulkan-1.lib")

@@ -4,13 +4,13 @@
 #include <mutex>
 #include <thread>
 
-#include <GLFW.h>
-#include <vulkan.h>
+#define GLFW_INCLUDE_VULKAN
+#include <vulkan/vulkan.h>
+#include <GLFW/glfw3.h>
 
 #include "Platform/Render/IRenderSurface.h"
 
 #include "DtContext.h"
-#include "IDtRenderContext.h"
 
 namespace Voxium::Platform::Desktop
 {
@@ -41,7 +41,7 @@ namespace Voxium::Platform::Desktop
     class InputContext final : public Voxium::Platform::Input::ISurfaceInputContext
     {
     public:
-        explicit InputContext(Voxium::Platform::Voxium::Platform::Render::IRenderSurface* surface) : surface_(surface) {}
+        explicit InputContext(Voxium::Platform::Render::IRenderSurface* surface) : surface_(surface) {}
 
         void ConsumeKeyboardEvents(Voxium::Platform::Input::KeyboardEventConsumer consumer) override;
         void ConsumeMouseEvents(Voxium::Platform::Input::MouseEventConsumer consumer) override;
@@ -53,17 +53,17 @@ namespace Voxium::Platform::Desktop
         void CenterCursor() override;
 
     private:
-        Voxium::Platform::Voxium::Platform::Render::IRenderSurface* surface_;
+        Voxium::Platform::Render::IRenderSurface* surface_;
         std::deque<KeyboardEvent>                 keyboardEvents_;
         std::deque<MouseEvent>                    mouseEvents_;
         std::deque<ScrollEvent>                   scrollEvents_;
         std::deque<CursorEvent>                   cursorEvents_;
         Voxium::Platform::Input::CursorMode       cursorMode_ = Voxium::Platform::Input::NORMAL;
 
-        friend class Voxium::Platform::Voxium::Platform::Render::IRenderSurface;
+        friend class Voxium::Platform::Render::IRenderSurface;
     };
 
-    class RenderSurface final : public Voxium::Platform::Voxium::Platform::Render::IRenderSurface
+    class RenderSurface final : public Voxium::Platform::Render::IRenderSurface
     {
     public:
         RenderSurface(const GLFWContext&               glfwContext,

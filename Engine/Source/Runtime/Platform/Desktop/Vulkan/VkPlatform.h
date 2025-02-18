@@ -25,12 +25,12 @@ namespace Voxium::Platform::Desktop::Vulkan
     public:
         Platform() = default;
 
-        [[nodiscard]] Voxium::Platform::Input::GlobalInputContext& GetGlobalInputContext() override
+        [[nodiscard]] Voxium::Platform::Input::IGlobalInputContext& GetGlobalInputContext() override
         {
             return globalInputContext_;
 
         }
-        [[nodiscard]] platform::RenderManager& GetRenderManager() override { return renderManager_; }
+        [[nodiscard]] Voxium::Platform::IRenderManager& GetRenderManager() override { return renderManager_; }
 
     private:
         RenderManager      renderManager_;

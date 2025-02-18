@@ -1,15 +1,17 @@
 ﻿#pragma once
+
 #include <queue>
 
-#include "../../render/render_surface.h"
-#include "../dt_render_context.h"
+#include "Platform/Render/IRenderSurface.h"
+
+#include "VkRenderContext.h"
 #include "VkFrameBuffer.h"
 #include "VkFrameBufferFormat.h"
-#include "vk_command_buffer.h"
+#include "VkCommandBuffer.h"
 #include "VkContext.h"
 #include "VkTextureBinding.h"
-#include "vk_uniforbinding_.h"
-#include "vk_uniforbuffer_.h"
+#include "VkUniformBinding.h"
+#include "VkUniformBuffer.h"
 #include "VkVertexBuffer.h"
 
 namespace Voxium::Platform::Desktop::Vulkan

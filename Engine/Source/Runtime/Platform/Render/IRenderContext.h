@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 #include <vector>
+#include <functional>
 
 #include "ICommandBuffer.h"
 #include "IFrameBuffer.h"
@@ -15,6 +16,7 @@
 #include "IUniformBinding.h"
 #include "IUniformBuffer.h"
 #include "IVertexBuffer.h"
+#include "IRenderSurface.h"
 
 namespace Voxium::Platform::Render
 {
@@ -294,7 +296,7 @@ namespace Voxium::Platform::Render
         [[nodiscard]] virtual std::shared_ptr<IShader>
         CreateShader(ShaderType type, const std::vector<uint8_t>& data, const std::vector<ShaderBinding>& bindings) = 0;
 
-        [[nodiscard]] virtual std::shared_ptr<RenderPipeline>
+        [[nodiscard]] virtual std::shared_ptr<IRenderPipeline>
         CreatePipeline(const std::shared_ptr<IFrameBufferFormat>&   format,
                        uint32_t                                     stage,
                        const std::vector<std::shared_ptr<IShader>>& shaders,
@@ -341,5 +343,5 @@ namespace Voxium::Platform::Render
                              const std::shared_ptr<ICommandBuffer>& commandBuffer) = 0;
     };
 
-    using RenderContextFactory = std::function<std::unique_ptr<IRenderContext>(IIRenderSurface&, IRenderSurface*)>;
+    using RenderContextFactory = std::function<std::unique_ptr<IRenderContext>(IRenderSurface&, IRenderSurface*)>;
 } // namespace Voxium::Platform::Render

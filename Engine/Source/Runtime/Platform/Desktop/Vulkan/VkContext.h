@@ -3,7 +3,7 @@
 #include <memory>
 #include <mutex>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.h>
 
 #include "VkBuffer.h"
 #include "VkImage.h"

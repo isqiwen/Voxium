@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <vulkan.h>
+#include <vulkan/vulkan.hpp>
 
 namespace Voxium::Platform::Desktop::Vulkan
 {

@@ -1,13 +1,16 @@
 ﻿#pragma once
 
-#include <functional>
+#include <string>
+#include <memory>
 
 #include "Platform/Input/ISurfaceInputContext.h"
 
-#include "IRenderContext.h"
+#include "IRenderTarget.h"
 
 namespace Voxium::Platform::Render
 {
+    class IRenderContext;
+
     class IRenderSurface : public IRenderTarget, public std::enable_shared_from_this<IRenderSurface>
     {
     public:
