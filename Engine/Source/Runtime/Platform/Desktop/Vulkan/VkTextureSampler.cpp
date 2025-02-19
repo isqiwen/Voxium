@@ -66,7 +66,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                     static_cast<float>(anisotropyLevel),
                                                     false,
                                                     vk::CompareOp::eAlways,
-                                                    toVulkan(borderColor),
+                                                    ToVulkan(borderColor),
                                                     false);
     }
 } // namespace Voxium::Platform::Desktop::Vulkan

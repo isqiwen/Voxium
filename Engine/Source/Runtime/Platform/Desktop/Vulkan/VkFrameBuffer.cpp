@@ -2,7 +2,7 @@
 
 namespace Voxium::Platform::Desktop::Vulkan
 {
-    vk::ImageAspectFlags toVulkanAspectFlags(const Voxium::Platform::Render::FrameBufferAttachmentType type)
+    vk::ImageAspectFlags ToVulkanAspectFlags(const Voxium::Platform::Render::FrameBufferAttachmentType type)
     {
         switch (type)
         {
@@ -14,7 +14,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::ImageUsageFlagBits toVulkanUsageFlags(const Voxium::Platform::Render::FrameBufferAttachmentType type)
+    vk::ImageUsageFlagBits ToVulkanUsageFlags(const Voxium::Platform::Render::FrameBufferAttachmentType type)
     {
         switch (type)
         {
@@ -42,9 +42,9 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         for (const auto& attachment : attachments)
         {
-            const auto usageFlags  = toVulkanUsageFlags(attachment.type) | vk::ImageUsageFlagBits::eSampled;
+            const auto usageFlags  = ToVulkanUsageFlags(attachment.type) | vk::ImageUsageFlagBits::eSampled;
             const auto vkFormat    = util::ToVulkanFormat(attachment.format);
-            const auto aspectFlags = toVulkanAspectFlags(attachment.type);
+            const auto aspectFlags = ToVulkanAspectFlags(attachment.type);
 
             std::vector<std::unique_ptr<VulkanImage>> images;
             std::vector<vk::UniqueImageView>          views;
@@ -113,7 +113,7 @@ namespace Voxium::Platform::Desktop::Vulkan
             const auto& attachment = attachments[i];
             util::TransitionImageLayouts(cmd,
                                          {{texture->image_s[texture->readIndex_]->get(),
-                                           toVulkanAspectFlags(attachment.type),
+                                           ToVulkanAspectFlags(attachment.type),
                                            attachment.type == Voxium::Platform::Render::FrameBufferAttachmentType::COLOR ?
                                                vk::ImageLayout::eColorAttachmentOptimal :
                                                vk::ImageLayout::eDepthStencilAttachmentOptimal,

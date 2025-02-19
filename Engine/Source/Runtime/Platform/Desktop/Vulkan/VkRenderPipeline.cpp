@@ -12,7 +12,7 @@ namespace Voxium::Platform::Desktop::Vulkan
     const Voxium::Platform::Render::DepthTest   DEFAULT_DEPTH_TEST   = Voxium::Platform::Render::DepthTest {false, Voxium::Platform::Render::CompareOperation::NEVER, false};
     const Voxium::Platform::Render::StencilTest DEFAULT_STENCIL_TEST = Voxium::Platform::Render::StencilTest {false, {}, {}};
 
-    vk::Format toVulkan(const Voxium::Platform::Render::NumericType type)
+    vk::Format ToVulkan(const Voxium::Platform::Render::NumericType type)
     {
         switch (type)
         {
@@ -48,7 +48,7 @@ namespace Voxium::Platform::Desktop::Vulkan
     }
 
     std::vector<vk::VertexInputAttributeDescription>
-    toVulkan(const Voxium::Platform::Render::VertexFormatDescriptor& format, const uint32_t binding, const uint32_t locationOffset)
+    ToVulkan(const Voxium::Platform::Render::VertexFormatDescriptor& format, const uint32_t binding, const uint32_t locationOffset)
     {
         std::vector<vk::VertexInputAttributeDescription> descriptions;
         descriptions.reserve(format.elements.size());
@@ -56,14 +56,14 @@ namespace Voxium::Platform::Desktop::Vulkan
         {
             vk::VertexInputAttributeDescription description {element.location + locationOffset,
                                                              binding,
-                                                             toVulkan(element.type),
+                                                             ToVulkan(element.type),
                                                              static_cast<uint32_t>(element.offset)};
             descriptions.push_back(description);
         }
         return descriptions;
     }
 
-    vk::PrimitiveTopology toVulkan(const Voxium::Platform::Render::Topology topology)
+    vk::PrimitiveTopology ToVulkan(const Voxium::Platform::Render::Topology topology)
     {
         switch (topology)
         {
@@ -83,7 +83,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::PolygonMode toVulkan(const Voxium::Platform::Render::RasterMode rasterMode)
+    vk::PolygonMode ToVulkan(const Voxium::Platform::Render::RasterMode rasterMode)
     {
         switch (rasterMode)
         {
@@ -97,7 +97,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::CullModeFlags toVulkan(const Voxium::Platform::Render::CullingMode cullingMode)
+    vk::CullModeFlags ToVulkan(const Voxium::Platform::Render::CullingMode cullingMode)
     {
         switch (cullingMode)
         {
@@ -113,7 +113,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::FrontFace toVulkan(const Voxium::Platform::Render::FrontFace frontFace)
+    vk::FrontFace ToVulkan(const Voxium::Platform::Render::FrontFace frontFace)
     {
         switch (frontFace)
         {
@@ -125,7 +125,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::CompareOp toVulkan(const Voxium::Platform::Render::CompareOperation operation)
+    vk::CompareOp ToVulkan(const Voxium::Platform::Render::CompareOperation operation)
     {
         switch (operation)
         {
@@ -149,7 +149,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::StencilOp toVulkan(const Voxium::Platform::Render::StencilOperation operation)
+    vk::StencilOp ToVulkan(const Voxium::Platform::Render::StencilOperation operation)
     {
         switch (operation)
         {
@@ -173,18 +173,18 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::StencilOpState toVulkan(const Voxium::Platform::Render::StencilFaceOperation operation)
+    vk::StencilOpState ToVulkan(const Voxium::Platform::Render::StencilFaceOperation operation)
     {
-        return vk::StencilOpState {toVulkan(operation.stencilFailOperation),
-                                   toVulkan(operation.successOperation),
-                                   toVulkan(operation.depthFailOperation),
-                                   toVulkan(operation.compareOperation),
+        return vk::StencilOpState {ToVulkan(operation.stencilFailOperation),
+                                   ToVulkan(operation.successOperation),
+                                   ToVulkan(operation.depthFailOperation),
+                                   ToVulkan(operation.compareOperation),
                                    operation.compareMask,
                                    operation.writeMask,
                                    operation.value};
     }
 
-    vk::BlendFactor toVulkan(const Voxium::Platform::Render::BlendFactor factor)
+    vk::BlendFactor ToVulkan(const Voxium::Platform::Render::BlendFactor factor)
     {
         switch (factor)
         {
@@ -220,7 +220,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::BlendOp toVulkan(const Voxium::Platform::Render::BlendOperation operation)
+    vk::BlendOp ToVulkan(const Voxium::Platform::Render::BlendOperation operation)
     {
         switch (operation)
         {
@@ -238,7 +238,7 @@ namespace Voxium::Platform::Desktop::Vulkan
         throw std::runtime_error("Invalid type.");
     }
 
-    vk::ColorComponentFlags toVulkan(const Voxium::Platform::Render::ColorComponents components)
+    vk::ColorComponentFlags ToVulkan(const Voxium::Platform::Render::ColorComponents components)
     {
         vk::ColorComponentFlags flags = {};
         if (static_cast<uint8_t>(components & Voxium::Platform::Render::ColorComponents::RED))
@@ -252,19 +252,19 @@ namespace Voxium::Platform::Desktop::Vulkan
         return flags;
     }
 
-    vk::PipelineColorBlendAttachmentState toVulkan(const Voxium::Platform::Render::BlendOptions options)
+    vk::PipelineColorBlendAttachmentState ToVulkan(const Voxium::Platform::Render::BlendOptions options)
     {
         return vk::PipelineColorBlendAttachmentState {options.enabled,
-                                                      toVulkan(options.srcColor),
-                                                      toVulkan(options.dstColor),
-                                                      toVulkan(options.colorOperation),
-                                                      toVulkan(options.srcAlpha),
-                                                      toVulkan(options.dstAlpha),
-                                                      toVulkan(options.alphaOperation),
-                                                      toVulkan(options.components)};
+                                                      ToVulkan(options.srcColor),
+                                                      ToVulkan(options.dstColor),
+                                                      ToVulkan(options.colorOperation),
+                                                      ToVulkan(options.srcAlpha),
+                                                      ToVulkan(options.dstAlpha),
+                                                      ToVulkan(options.alphaOperation),
+                                                      ToVulkan(options.components)};
     }
 
-    std::vector<vk::DynamicState> toVulkan(const Voxium::Platform::Render::RenderState state)
+    std::vector<vk::DynamicState> ToVulkan(const Voxium::Platform::Render::RenderState state)
     {
         std::vector<vk::DynamicState> dynamicStates;
         if (!state.depthBias.has_value())
@@ -298,34 +298,34 @@ namespace Voxium::Platform::Desktop::Vulkan
                                    const Voxium::Platform::Render::VertexFormatDescriptor&    instanceFormat,
                                    const Voxium::Platform::Render::RenderState                state,
                                    const std::vector<Voxium::Platform::Render::BlendOptions>& blendOptions) :
-        context_(std::move(context)), format_(std::move(format)), shader_s(std::move(shaders))
+        context_(std::move(context)), format_(std::move(format)), shaders_(std::move(shaders))
     {
         std::vector<vk::VertexInputBindingDescription>   vertexBindings;
         std::vector<vk::VertexInputAttributeDescription> vertexAttributes;
 
         vertexBindings.emplace_back(BINDING_VERTEX, vertexFormat.size, vk::VertexInputRate::eVertex);
-        auto perVertexAttributes = toVulkan(vertexFormat, BINDING_VERTEX, 0);
+        auto perVertexAttributes = ToVulkan(vertexFormat, BINDING_VERTEX, 0);
         vertexAttributes.insert(vertexAttributes.end(), perVertexAttributes.begin(), perVertexAttributes.end());
 
         if (instanceFormat.size > 0)
         {
             vertexBindings.emplace_back(BINDING_INSTANCE, instanceFormat.size, vk::VertexInputRate::eInstance);
             auto perInstanceAttributes =
-                toVulkan(instanceFormat, BINDING_INSTANCE, static_cast<uint32_t>(vertexFormat.elements.size()));
+                ToVulkan(instanceFormat, BINDING_INSTANCE, static_cast<uint32_t>(vertexFormat.elements.size()));
             vertexAttributes.insert(vertexAttributes.end(), perInstanceAttributes.begin(), perInstanceAttributes.end());
         }
 
         vk::PipelineVertexInputStateCreateInfo   vertexInputStateCreateInfo {{}, vertexBindings, vertexAttributes};
-        vk::PipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo {{}, toVulkan(state.topology), false};
+        vk::PipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo {{}, ToVulkan(state.topology), false};
 
         const auto                               depthBias = state.depthBias.value_or(DEFAULT_DEPTH_BIAS);
         vk::PipelineRasterizationStateCreateInfo rasterizationStateCreateInfo {
             {},
             false,
             state.discardRaster,
-            toVulkan(state.rasterMode),
-            toVulkan(state.cullingMode.value_or(DEFAULT_CULLING_MODE)),
-            toVulkan(state.frontFace.value_or(DEFAULT_FRONT_FACE)),
+            ToVulkan(state.rasterMode),
+            ToVulkan(state.cullingMode.value_or(DEFAULT_CULLING_MODE)),
+            ToVulkan(state.frontFace.value_or(DEFAULT_FRONT_FACE)),
             depthBias.enabled,
             depthBias.constantFactor,
             depthBias.clamp,
@@ -344,11 +344,11 @@ namespace Voxium::Platform::Desktop::Vulkan
         vk::PipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo {{},
                                                                              depthTest.enabled,
                                                                              depthTest.write,
-                                                                             toVulkan(depthTest.comparison),
+                                                                             ToVulkan(depthTest.comparison),
                                                                              false,
                                                                              stencilTest.enabled,
-                                                                             toVulkan(stencilTest.front),
-                                                                             toVulkan(stencilTest.back),
+                                                                             ToVulkan(stencilTest.front),
+                                                                             ToVulkan(stencilTest.back),
                                                                              0.0f,
                                                                              1.0f};
 
@@ -356,30 +356,30 @@ namespace Voxium::Platform::Desktop::Vulkan
         for (auto i = 0u; i < format_->GetAttachmentCount(); ++i)
         {
             if (format_->GetAttachments()[i].type == Voxium::Platform::Render::FrameBufferAttachmentType::COLOR)
-                blendAttachments.push_back(toVulkan(blendOptions[i]));
+                blendAttachments.push_back(ToVulkan(blendOptions[i]));
         }
         vk::PipelineColorBlendStateCreateInfo colorBlendStateCreateInfo {
             {}, false, vk::LogicOp::eCopy, blendAttachments, {0.0f, 0.0f, 0.0f, 0.0f}};
 
-        auto dynamicStates = std::vector(toVulkan(state));
+        auto dynamicStates = std::vector(ToVulkan(state));
         dynamicStates.insert(dynamicStates.end(), {vk::DynamicState::eViewport, vk::DynamicState::eScissor});
         vk::PipelineDynamicStateCreateInfo dynamicStateCreateInfo {{}, dynamicStates};
 
         uint32_t descriptorOffset = 0;
-        for (const auto& shader : shader_s)
+        for (const auto& shader : shaders_)
         {
             auto& layouts = shader->GetDescriptorSetLayouts();
-            m_descriptorSetLayouts.insert(m_descriptorSetLayouts.end(), layouts.begin(), layouts.end());
+            descriptorSetLayouts_.insert(descriptorSetLayouts_.end(), layouts.begin(), layouts.end());
 
-            shader_LayoutOffsets.emplace(shader.get(), descriptorOffset);
+            shaderLayoutOffsets_.emplace(shader.get(), descriptorOffset);
             descriptorOffset += static_cast<uint32_t>(layouts.size());
         }
-        m_layout = context_->device_->CreatePipelineLayoutUnique({{}, m_descriptorSetLayouts});
+        layout_ = context_->device_->CreatePipelineLayoutUnique({{}, descriptorSetLayouts_});
 
         // TODO: Other layout / uniform stuff
 
         std::vector<vk::PipelineShaderStageCreateInfo> pipelineShaderStageCreateInfos;
-        for (const auto& shader : shader_s)
+        for (const auto& shader : shaders_)
             pipelineShaderStageCreateInfos.push_back({{}, shader->GetStage(), shader->GetModule(), "main", {}});
 
         pipeline_ = context_->device_
@@ -395,7 +395,7 @@ namespace Voxium::Platform::Desktop::Vulkan
                                                          &depthStencilStateCreateInfo,
                                                          &colorBlendStateCreateInfo,
                                                          &dynamicStateCreateInfo,
-                                                         m_layout.get(),
+                                                         layout_.get(),
                                                          format_->GetPass(),
                                                          stage,
                                                          nullptr,

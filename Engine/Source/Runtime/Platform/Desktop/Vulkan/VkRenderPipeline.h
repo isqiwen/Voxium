@@ -21,20 +21,20 @@ namespace Voxium::Platform::Desktop::Vulkan
 
         [[nodiscard]] vk::Pipeline& Get() { return *pipeline_; }
 
-        [[nodiscard]] vk::PipelineLayout& GetLayout() { return *m_layout; }
+        [[nodiscard]] vk::PipelineLayout& GetLayout() { return *layout_; }
 
         [[nodiscard]] uint32_t GetLayoutOffset(const std::shared_ptr<IShader>& shader) const
         {
-            return shader_LayoutOffsets.at(shader.get());
+            return shaderLayoutOffsets_.at(shader.get());
         }
 
     private:
         std::shared_ptr<VulkanContext>        context_;
-        std::shared_ptr<IFrameBufferFormat>    format_;
-        std::vector<std::shared_ptr<IShader>>  shader_s;
-        std::unordered_map<Shader*, uint32_t> shader_LayoutOffsets;
-        std::vector<vk::DescriptorSetLayout>  m_descriptorSetLayouts;
-        vk::UniquePipelineLayout              m_layout;
+        std::shared_ptr<IFrameBufferFormat>   format_;
+        std::vector<std::shared_ptr<IShader>> shaders_;
+        std::unordered_map<Shader*, uint32_t> shaderLayoutOffsets_;
+        std::vector<vk::DescriptorSetLayout>  descriptorSetLayouts_;
+        vk::UniquePipelineLayout              layout_;
         vk::UniquePipeline                    pipeline_;
     };
 } // namespace Voxium::Platform::Desktop::Vulkan
