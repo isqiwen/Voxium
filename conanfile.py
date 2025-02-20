@@ -55,9 +55,9 @@ class Voxium(ConanFile):
     #     "cppcheck/[>=2.12.1]"
     # ]
 
-    # test_requires = [
-    #     "gtest/[>=1.14.0]"
-    # ]
+    test_requires = [
+        "gtest/[>=1.14.0]"
+    ]
 
     def config_options(self):
         if self.settings.os == "Windows":
