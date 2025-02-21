@@ -15,7 +15,7 @@ namespace Voxium::Core
         float M21, M22, M23, M24;
         float M31, M32, M33, M34;
 
-        static const Matrix3x4F Zero;
+        static constexpr Matrix3x4F Zero;
 
         constexpr Matrix3x4F(float m11,
                              float m12,
@@ -37,7 +37,7 @@ namespace Voxium::Core
     };
 #pragma pack(pop)
 
-    inline const Matrix3x4F Matrix3x4F::Zero = Matrix3x4F(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    inline constexpr Matrix3x4F Matrix3x4F::Zero = Matrix3x4F(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 #pragma pack(push, 1)
     struct Matrix3F
@@ -46,7 +46,7 @@ namespace Voxium::Core
         float M21, M22, M23;
         float M31, M32, M33;
 
-        static const Matrix3F Zero;
+        static constexpr Matrix3F Zero;
 
         constexpr Matrix3F(float m11,
                            float m12,
@@ -91,6 +91,6 @@ namespace Voxium::Core
     };
 #pragma pack(pop)
 
-    inline const Matrix3F Matrix3F::Zero = Matrix3F(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    inline constexpr Matrix3F Matrix3F::Zero = Matrix3F(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 } // namespace Voxium::Core

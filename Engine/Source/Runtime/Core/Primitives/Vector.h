@@ -82,17 +82,16 @@ namespace Voxium::Core
             HashCombine(hash, X, Y);
             return hash;
         }
-
-        friend bool             operator==(const Vector& a, const Vector& b) { return a.IsEqual(b); }
-        friend bool             operator!=(const Vector& a, const Vector& b) { return !(a == b); }
-        friend constexpr Vector operator+(const Vector& a, const Vector& b) { return Vector(a.X + b.X, a.Y + b.Y); }
-        friend constexpr Vector operator-(const Vector& a, const Vector& b) { return Vector(a.X - b.X, a.Y - b.Y); }
-        friend constexpr Vector operator*(const Vector& a, double scale) { return Vector(a.X * scale, a.Y * scale); }
-        friend constexpr Vector operator/(const Vector& a, double scale) { return Vector(a.X / scale, a.Y / scale); }
-        friend constexpr Vector operator-(const Vector& a) { return Vector(-a.X, -a.Y); }
     };
 #pragma pack(pop)
 
     inline const Vector Vector::Zero = Vector(0.0, 0.0);
 
+    bool             operator==(const Vector& a, const Vector& b) { return a.IsEqual(b); }
+    bool             operator!=(const Vector& a, const Vector& b) { return !(a == b); }
+    constexpr Vector operator+(const Vector& a, const Vector& b) { return Vector(a.X + b.X, a.Y + b.Y); }
+    constexpr Vector operator-(const Vector& a, const Vector& b) { return Vector(a.X - b.X, a.Y - b.Y); }
+    constexpr Vector operator*(const Vector& a, double scale) { return Vector(a.X * scale, a.Y * scale); }
+    constexpr Vector operator/(const Vector& a, double scale) { return Vector(a.X / scale, a.Y / scale); }
+    constexpr Vector operator-(const Vector& a) { return Vector(-a.X, -a.Y); }
 } // namespace Voxium::Core
