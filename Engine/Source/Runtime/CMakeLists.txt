@@ -11,10 +11,10 @@ file(GLOB_RECURSE SOURCE_FILES "Core/*.cpp")
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES})
 
-add_library(${RUNTIME_TARGET} ${HEADER_FILES} ${SOURCE_FILES})
+add_library(${RUNTIME_TARGET} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 target_link_libraries(
     ${RUNTIME_TARGET}
-    PUBLIC
+    PRIVATE
         ProjectOptions
         nlohmann_json::nlohmann_json
         spdlog::spdlog_header_only
@@ -24,13 +24,21 @@ target_link_libraries(
         Vulkan::Vulkan
 )
 
+target_compile_definitions(${RUNTIME_TARGET} PRIVATE CORE_EXPORTS)
+
 set_target_properties(${RUNTIME_TARGET} PROPERTIES FOLDER "Engine")
 
-# target_include_directories(
-#   ${RUNTIME_TARGET}
-#   PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/Source/Runtime>
-#   $<INSTALL_INTERFACE:include/${RUNTIME_TARGET}-${PROJECT_VERSION}>
-# )
+target_include_directories(
+  ${RUNTIME_TARGET}
+  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/Source/Runtime/Core/Public>
+  $<INSTALL_INTERFACE:include/${RUNTIME_TARGET}-${PROJECT_VERSION}>
+)
+
+target_include_directories(
+  ${RUNTIME_TARGET}
+  PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/Source/Runtime/Core>
+  $<INSTALL_INTERFACE:include/${RUNTIME_TARGET}-${PROJECT_VERSION}>
+)
 
 target_include_directories(
   ${RUNTIME_TARGET}

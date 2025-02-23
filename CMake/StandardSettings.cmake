@@ -72,9 +72,9 @@ option(${PROJECT_NAME}_GENERATE_EXPORT_HEADER "Create a `project_export.h` file 
 
 # Export all symbols when building a shared library
 if(BUILD_SHARED_LIBS)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    # set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-    # set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
+    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 endif()
 
 add_compile_definitions(EURORA_BUILD_SHARED_LIBS=$<BOOL:${BUILD_SHARED_LIBS}>)
